@@ -5,3 +5,6 @@ files:
       - sub1.pdf
       - sub2.pdf
       - sub3.pdf
+
+options:
+  subfolder: true

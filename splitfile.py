@@ -1,5 +1,6 @@
 import yaml
 from PyPDF2 import PdfFileWriter, PdfFileReader  # type: ignore
+import os
 
 
 def get_split_intervals(split_positions: list, length: int) -> list[list[int]]:
@@ -20,18 +21,31 @@ def get_split_intervals(split_positions: list, length: int) -> list[list[int]]:
     return intervals
 
 
-def get_config(filename: str) -> dict:
+def get_config(filename: str) -> tuple[dict, dict]:
     with open(filename, "r") as config_file:
         config = yaml.load(config_file)
-        return config["files"]
+
+        files_config = config["files"]
+        options_dict = {"subfolder": False, "subfolder_suffix": "folder"} | config[
+            "options"
+        ]
+
+        return files_config, options_dict
 
 
-def split_file(file_config: dict) -> None:
+def split_file(file_config: dict, options: dict) -> None:
     with open(file_config["name"], "rb") as infile:
         inputpdf = PdfFileReader(infile)
 
+        folder_name = ""
+        if options["subfolder"]:
+            filename, _ = os.path.splitext(file_config['name'])
+            folder_name = f'{filename}_{options["subfolder_suffix"]}'
+            os.mkdir(folder_name)
+
         split_intervals = get_split_intervals(file_config["split"], inputpdf.numPages)
         for interval, outfilename in zip(split_intervals, file_config["sub_files"]):
+            outfilename = os.path.join(folder_name, outfilename)
             export_page_range(inputpdf, interval, outfilename)
 
 
@@ -40,18 +54,18 @@ def export_page_range(
 ) -> None:
     outputpdf = PdfFileWriter()
     for page in interval:
-        outputpdf.addPage(inputpdf.getPage(page-1))
+        outputpdf.addPage(inputpdf.getPage(page - 1))
 
     with open(outfilename, "wb") as outfile:
         outputpdf.write(outfile)
 
 
 def main(config_filename: str) -> None:
-    files_config = get_config(config_filename)
+    files_config, options = get_config(config_filename)
 
     for file_config in files_config:
-        split_file(file_config)
+        split_file(file_config, options)
 
 
 if __name__ == "__main__":
-    main('config.yaml')
+    main("config.yaml")
