@@ -2,6 +2,8 @@ import yaml
 from PyPDF2 import PdfFileWriter, PdfFileReader  # type: ignore
 import os
 
+DEFAULT_OPTIONS = {"subfolder": False, "subfolder_suffix": "folder"}
+
 
 def get_split_intervals(split_positions: list, length: int) -> list[list[int]]:
     """Returns page intervals from position where to split
@@ -26,9 +28,7 @@ def get_config(filename: str) -> tuple[dict, dict]:
         config = yaml.load(config_file)
 
         files_config = config["files"]
-        options_dict = {"subfolder": False, "subfolder_suffix": "folder"} | config[
-            "options"
-        ]
+        options_dict = DEFAULT_OPTIONS | config["options"]
 
         return files_config, options_dict
 
@@ -39,7 +39,7 @@ def split_file(file_config: dict, options: dict) -> None:
 
         folder_name = ""
         if options["subfolder"]:
-            filename, _ = os.path.splitext(file_config['name'])
+            filename, _ = os.path.splitext(file_config["name"])
             folder_name = f'{filename}_{options["subfolder_suffix"]}'
             os.mkdir(folder_name)
 
