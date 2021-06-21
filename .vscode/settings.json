@@ -1,0 +1,4 @@
+{
+    "python.formatting.provider": "black",
+    "python.pythonPath": "/home/rowin/.local/share/virtualenvs/filesplit-ZzvQNv1P/bin/python"
+}

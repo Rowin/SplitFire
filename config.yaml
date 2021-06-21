@@ -1,0 +1,7 @@
+files:
+  - name: azerty.pdf
+    split: [2, 3]
+    sub_files:
+      - sub1.pdf
+      - sub2.pdf
+      - sub3.pdf
