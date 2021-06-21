@@ -1,5 +1,5 @@
 import PyPDF2
-from splitfile import get_split_intervals, export_page_range
+from splitfire import get_split_intervals, export_page_range
 from unittest import mock
 
 
